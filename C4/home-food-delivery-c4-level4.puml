@@ -1,0 +1,175 @@
+@startuml
+title Diagrama de Clases - Aplicación de Entrega de Comida
+
+package "Servicios de Aplicación" {
+    
+    class WebApp {
+        +String nombre
+        +hacerPedido()
+        +verRestaurantes()
+    }
+
+
+    package "Order Service" {
+        class OrderController {
+            +crearPedido(pedidoDTO: PedidoDTO)
+            +actualizarEstadoPedido(id: String, estado: EstadoPedido)
+        }
+        
+        class OrderService {
+            +crearPedido(pedidoDTO: PedidoDTO)
+            +actualizarEstadoPedido(id: String, estado: EstadoPedido)
+        }
+        
+        class OrderRepository {
+            +guardarPedido(pedido: Pedido)
+            +encontrarPedido(id: String): Pedido
+        }
+
+        class OrderDatabase {
+            +conectar()
+            +desconectar()
+        }
+        
+        OrderController --> OrderService : invoca
+        OrderService --> OrderRepository : utiliza
+        OrderRepository --> OrderDatabase : utiliza
+    }
+    
+    package "Restaurant Service" {
+        class RestaurantController {
+            +agregarRestaurante(restauranteDTO: RestauranteDTO)
+            +actualizarMenu(id: String, menuDTO: MenuDTO)
+        }
+        
+        class RestaurantService {
+            +agregarRestaurante(restauranteDTO: RestauranteDTO)
+            +actualizarMenu(id: String, menuDTO: MenuDTO)
+        }
+        
+        class RestaurantRepository {
+            +guardarRestaurante(restaurante: Restaurante)
+            +encontrarRestaurante(id: String): Restaurante
+        }
+        
+        class RestaurantDatabase {
+            +conectar()
+            +desconectar()
+        }
+        
+        RestaurantController --> RestaurantService : invoca
+        RestaurantService --> RestaurantRepository : utiliza
+        RestaurantRepository --> RestaurantDatabase : utiliza
+    }
+    
+    package "User Service" {
+        class UserController {
+            +registrarUsuario(usuarioDTO: UsuarioDTO)
+            +autenticar(usuario: String, contraseña: String)
+        }
+        
+        class UserService {
+            +registrarUsuario(usuarioDTO: UsuarioDTO)
+            +autenticar(usuario: String, contraseña: String)
+        }
+        
+        class UserRepository {
+            +guardarUsuario(usuario: Usuario)
+            +encontrarUsuario(id: String): Usuario
+        }
+        
+        class UserDatabase {
+            +conectar()
+            +desconectar()
+        }
+        
+        UserController --> UserService : invoca
+        UserService --> UserRepository : utiliza
+        UserRepository --> UserDatabase : utiliza
+    }
+    
+    package "Notification Service" {
+        class NotificationController {
+            +enviarNotificacion(usuarioDTO: UsuarioDTO, mensaje: String)
+        }
+        
+        class NotificationService {
+            +enviarNotificacion(usuarioDTO: UsuarioDTO, mensaje: String)
+        }
+        
+        class NotificationRepository {
+            +guardarNotificacion(notificacion: Notificacion)
+        }
+        
+        class NotificationDatabase {
+            +conectar()
+            +desconectar()
+        }
+        
+        NotificationController --> NotificationService : invoca
+        NotificationService --> NotificationRepository : utiliza
+        NotificationRepository --> NotificationDatabase : utiliza
+    }
+}
+
+package "Modelos" {
+    class Pedido {
+        -String id
+        -String restauranteId
+        -List<Item> items
+        -EstadoPedido estado
+    }
+
+    class Restaurante {
+        -String id
+        -String nombre
+        -Menu menu
+    }
+
+    class Usuario {
+        -String id
+        -String nombre
+        -String correo
+    }
+
+    class Menu {
+        -List<Item> items
+    }
+
+    class Item {
+        -String nombre
+        -double precio
+    }
+
+    class Notificacion {
+        -String id
+        -String mensaje
+        -String usuarioId
+    }
+
+    enum EstadoPedido {
+        PENDIENTE
+        EN_PROCESO
+        COMPLETADO
+        CANCELADO
+    }
+}
+
+WebApp --> OrderController
+WebApp --> RestaurantController
+WebApp --> NotificationController
+WebApp --> UserController
+OrderController --> OrderService : invoca
+OrderService --> OrderRepository : utiliza
+OrderRepository --> OrderDatabase : utiliza
+RestaurantController --> RestaurantService : invoca
+RestaurantService --> RestaurantRepository : utiliza
+RestaurantRepository --> RestaurantDatabase : utiliza
+UserController --> UserService : invoca
+UserService --> UserRepository : utiliza
+UserRepository --> UserDatabase : utiliza
+NotificationController --> NotificationService : invoca
+NotificationService --> NotificationRepository : utiliza
+NotificationRepository --> NotificationDatabase : utiliza
+
+@enduml
